@@ -1,19 +1,14 @@
-plugins {
-    id("java")
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://maven.felnull.dev") }
+    }
 }
 
-group = "dev.felnull"
-version = "1.0-SNAPSHOT"
+subprojects {
+    apply(plugin = "java")
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-}
-
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    group = rootProject.group
+    version = rootProject.version
 }
