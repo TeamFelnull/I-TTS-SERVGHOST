@@ -37,7 +37,7 @@ create table dict_use_data
 (
     server_id BIGINT       NOT NULL,-- サーバーID
     dict_id   VARCHAR(100) NOT NULL,-- 辞書ID(文字列で指定)
-    priority  INT          NOT NULL,-- 優先度(今のところ未使用)
+    priority  INT          NOT NULL,-- 優先度(-1の場合無効)
     PRIMARY KEY (server_id, dict_id)
 );
 
