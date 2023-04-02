@@ -1,7 +1,7 @@
-package dev.felnull.itts.savedata.db.entry;
+package dev.felnull.itts.savedata.db;
 
 public class DictUseDataEntry {
-    private final long serverId;
+    private long serverId;
     private String dictId;
     private int priority;
 
@@ -13,6 +13,10 @@ public class DictUseDataEntry {
 
     public long getServerId() {
         return serverId;
+    }
+
+    public void setServerId(long serverId) {
+        this.serverId = serverId;
     }
 
     public String getDictId() {

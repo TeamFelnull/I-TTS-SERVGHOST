@@ -1,7 +1,7 @@
-package dev.felnull.itts.savedata.db.entry;
+package dev.felnull.itts.savedata.db;
 
 public class ServerDataEntry {
-    private final long serverId;
+    private long serverId;
     private String defaultVoiceType;
     private String ignoreRegex;
     private boolean needJoin;
@@ -23,6 +23,10 @@ public class ServerDataEntry {
 
     public long getServerId() {
         return serverId;
+    }
+
+    public void setServerId(long serverId) {
+        this.serverId = serverId;
     }
 
     public String getDefaultVoiceType() {

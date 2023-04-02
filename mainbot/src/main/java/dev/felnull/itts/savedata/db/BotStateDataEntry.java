@@ -1,8 +1,8 @@
-package dev.felnull.itts.savedata.db.entry;
+package dev.felnull.itts.savedata.db;
 
 public class BotStateDataEntry {
-    private final long serverId;
-    private final long botId;
+    private long serverId;
+    private long botId;
     private long connectedAudioChannel;
     private long readAroundTextChannel;
 
@@ -17,8 +17,16 @@ public class BotStateDataEntry {
         return serverId;
     }
 
+    public void setServerId(long serverId) {
+        this.serverId = serverId;
+    }
+
     public long getBotId() {
         return botId;
+    }
+
+    public void setBotId(long botId) {
+        this.botId = botId;
     }
 
     public long getConnectedAudioChannel() {

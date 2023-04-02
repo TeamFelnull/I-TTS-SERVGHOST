@@ -1,8 +1,7 @@
-package dev.felnull.itts.savedata.impl;
+package dev.felnull.itts.savedata;
 
 import dev.felnull.itts.core.savedata.ServerData;
-import dev.felnull.itts.savedata.DBSaveDataBase;
-import dev.felnull.itts.savedata.db.entry.ServerDataEntry;
+import dev.felnull.itts.savedata.db.ServerDataEntry;
 import dev.felnull.itts.savedata.db.SaveDataDAO;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class ServerDataImpl extends DBSaveDataBase<ServerDataEntry> implements ServerData {
+public class ServerDataImpl extends DBEntrySaveData<ServerDataEntry> implements ServerData {
     private final long serverId;
 
     public ServerDataImpl(long serverId, SaveDataDAO dao) {

@@ -1,15 +1,14 @@
-package dev.felnull.itts.savedata.impl;
+package dev.felnull.itts.savedata;
 
 import dev.felnull.itts.core.savedata.BotStateData;
-import dev.felnull.itts.savedata.DBSaveDataBase;
-import dev.felnull.itts.savedata.db.entry.BotStateDataEntry;
+import dev.felnull.itts.savedata.db.BotStateDataEntry;
 import dev.felnull.itts.savedata.db.SaveDataDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class BotStateDataImpl extends DBSaveDataBase<BotStateDataEntry> implements BotStateData {
+public class BotStateDataImpl extends DBEntrySaveData<BotStateDataEntry> implements BotStateData {
     private final long serverId;
     private final long botId;
 

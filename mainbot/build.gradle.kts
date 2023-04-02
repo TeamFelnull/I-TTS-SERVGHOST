@@ -18,6 +18,7 @@ plugins {
 }
 
 group = "dev.felnull"
+version = "2.0.0-pre.20"
 
 repositories {
     mavenCentral()
@@ -30,7 +31,7 @@ configurations {
 
 
 dependencies {
-    shadowIn("dev.felnull:itts-core:${properties["itts_version"]}")
+    shadowIn("dev.felnull:itts-core:2.0.0-pre.20")
     shadowIn("mysql:mysql-connector-java:8.0.32")
 }
 
