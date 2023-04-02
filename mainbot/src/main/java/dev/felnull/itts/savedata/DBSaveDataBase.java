@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.function.Function;
 
-public abstract class DBEntrySaveData<T> {
+public abstract class DBSaveDataBase<T> {
     protected final SaveDataDAO dao;
     private final T initData;
 
-    public DBEntrySaveData(SaveDataDAO dao, T initData) {
+    public DBSaveDataBase(SaveDataDAO dao, T initData) {
         this.dao = dao;
         this.initData = initData;
     }

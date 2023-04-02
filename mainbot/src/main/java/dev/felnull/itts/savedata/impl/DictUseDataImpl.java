@@ -1,7 +1,8 @@
-package dev.felnull.itts.savedata;
+package dev.felnull.itts.savedata.impl;
 
 import dev.felnull.itts.core.savedata.DictUseData;
-import dev.felnull.itts.savedata.db.DictUseDataEntry;
+import dev.felnull.itts.savedata.DBSaveDataBase;
+import dev.felnull.itts.savedata.db.entry.DictUseDataEntry;
 import dev.felnull.itts.savedata.db.SaveDataDAO;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class DictUseDataImpl extends DBEntrySaveData<DictUseDataEntry> implements DictUseData {
+public class DictUseDataImpl extends DBSaveDataBase<DictUseDataEntry> implements DictUseData {
     private final long serverId;
     private final String dictId;
 

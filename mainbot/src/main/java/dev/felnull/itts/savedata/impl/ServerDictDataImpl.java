@@ -1,7 +1,7 @@
-package dev.felnull.itts.savedata;
+package dev.felnull.itts.savedata.impl;
 
 import dev.felnull.itts.core.savedata.DictData;
-import dev.felnull.itts.savedata.db.ServerDictDataEntry;
+import dev.felnull.itts.savedata.db.entry.ServerDictDataEntry;
 import org.jetbrains.annotations.NotNull;
 
 public record ServerDictDataImpl(ServerDictDataEntry dictDataEntry) implements DictData {

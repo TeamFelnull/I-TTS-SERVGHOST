@@ -1,5 +1,7 @@
 package dev.felnull.itts.savedata.db;
 
+import dev.felnull.itts.savedata.db.entry.*;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -273,7 +275,7 @@ public class SaveDataDAO {
 
         try (ResultSet rs = ps.executeQuery()) {
             while (rs.next())
-                ret.add(new ServerDictDataEntry(rs.getLong("server_id"), rs.getInt("dict_word_id"), rs.getString("target_word"), rs.getString("read_word")));
+                ret.add(new ServerDictDataEntry(rs.getLong("server_id"), rs.getString("target_word"), rs.getString("read_word")));
         }
 
         return ret;
@@ -287,7 +289,7 @@ public class SaveDataDAO {
 
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next())
-                return Optional.of(new ServerDictDataEntry(rs.getLong("server_id"), rs.getInt("dict_word_id"), rs.getString("target_word"), rs.getString("read_word")));
+                return Optional.of(new ServerDictDataEntry(rs.getLong("server_id"), rs.getString("target_word"), rs.getString("read_word")));
         }
 
         return Optional.empty();
@@ -295,37 +297,16 @@ public class SaveDataDAO {
 
     public void insertServerDictData(Connection con, ServerDictDataEntry dictDataEntry) throws SQLException {
         var sql = """
-                insert into server_dict_data(server_id, dict_word_id, target_word, read_word)
+                insert into server_dict_data(server_id, target_word, read_word)
                 values (?, ?, ?, ?)
                 """;
         var ps = con.prepareCall(sql);
 
         ps.setLong(1, dictDataEntry.getServerId());
-        ps.setInt(2, dictDataEntry.getDictWordId());
-        ps.setString(3, dictDataEntry.getTargetWord());
-        ps.setString(4, dictDataEntry.getReadWord());
+        ps.setString(2, dictDataEntry.getTargetWord());
+        ps.setString(3, dictDataEntry.getReadWord());
 
         ps.execute();
-    }
-
-    public int selectServerDictDataMaxWordId(Connection con, long serverId) throws SQLException {
-        var sql = """
-                select max(dict_word_id) as max_word_id
-                from server_dict_data
-                where server_id = ?
-                group by server_id
-                limit 1
-                """;
-
-        var ps = con.prepareCall(sql);
-        ps.setLong(1, serverId);
-
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next())
-                return rs.getInt("max_word_id");
-        }
-
-        return 0;
     }
 
     public void deleteServerDictData(Connection con, long serverId, String targetWord) throws SQLException {
@@ -345,7 +326,7 @@ public class SaveDataDAO {
 
         try (ResultSet rs = ps.executeQuery()) {
             while (rs.next())
-                ret.add(new GlobalDictDataEntry(rs.getInt("dict_word_id"), rs.getString("target_word"), rs.getString("read_word")));
+                ret.add(new GlobalDictDataEntry(rs.getString("target_word"), rs.getString("read_word")));
         }
 
         return ret;
@@ -358,7 +339,7 @@ public class SaveDataDAO {
 
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next())
-                return Optional.of(new GlobalDictDataEntry(rs.getInt("dict_word_id"), rs.getString("target_word"), rs.getString("read_word")));
+                return Optional.of(new GlobalDictDataEntry(rs.getString("target_word"), rs.getString("read_word")));
         }
 
         return Optional.empty();
@@ -398,5 +379,101 @@ public class SaveDataDAO {
         }
 
         return ret;
+    }
+
+    public Optional<BotInfoEntry> selectBotInfo(Connection con, long botId) throws SQLException {
+        var sql = "select * from bot_info where bot_id=? limit 1";
+        var ps = con.prepareCall(sql);
+        ps.setLong(1, botId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next())
+                return Optional.of(new BotInfoEntry(rs.getLong("bot_id"), rs.getString("bot_name")));
+        }
+
+        return Optional.empty();
+    }
+
+    public void insertBotInfo(Connection con, BotInfoEntry botInfo) throws SQLException {
+        var sql = "insert into bot_info(bot_id, bot_name) value (?, ?)";
+        var ps = con.prepareCall(sql);
+        ps.setLong(1, botInfo.getBotId());
+        ps.setString(2, botInfo.getBotName());
+
+        ps.execute();
+    }
+
+    public void updateBotInfo(Connection con, BotInfoEntry botInfo) throws SQLException {
+        var sql = """
+                update bot_info
+                set bot_name=?
+                where bot_id = ?
+                """;
+
+        var ps = con.prepareCall(sql);
+        ps.setString(1, botInfo.getBotName());
+        ps.setLong(2, botInfo.getBotId());
+
+        ps.execute();
+    }
+
+    public void deleteBotInfo(Connection con, long botId) throws SQLException {
+        var sql = """
+                delete from bot_info
+                where bot_id=?
+                """;
+
+        var ps = con.prepareCall(sql);
+        ps.setLong(1, botId);
+
+        ps.execute();
+    }
+
+    public Optional<ServerInfoEntry> selectServerInfo(Connection con, long serverId) throws SQLException {
+        var sql = "select * from server_info where server_id=? limit 1";
+        var ps = con.prepareCall(sql);
+        ps.setLong(1, serverId);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next())
+                return Optional.of(new ServerInfoEntry(rs.getLong("server_id"), rs.getString("server_name")));
+        }
+
+        return Optional.empty();
+    }
+
+    public void insertServerInfo(Connection con, ServerInfoEntry serverInfo) throws SQLException {
+        var sql = "insert into server_info(server_id, server_name) values (?, ?)";
+        var ps = con.prepareCall(sql);
+        ps.setLong(1, serverInfo.getServerId());
+        ps.setString(2, serverInfo.getServerName());
+
+        ps.execute();
+    }
+
+    public void updateServerInfo(Connection con, ServerInfoEntry serverInfo) throws SQLException {
+        var sql = """
+                update server_info
+                set server_name=?
+                where server_id = ?
+                """;
+
+        var ps = con.prepareCall(sql);
+        ps.setString(1, serverInfo.getServerName());
+        ps.setLong(2, serverInfo.getServerId());
+
+        ps.execute();
+    }
+
+    public void deleteServerInfo(Connection con, long serverId) throws SQLException {
+        var sql = """
+                delete from server_info
+                where server_id=?
+                """;
+
+        var ps = con.prepareCall(sql);
+        ps.setLong(1, serverId);
+
+        ps.execute();
     }
 }

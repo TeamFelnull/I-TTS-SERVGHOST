@@ -2,7 +2,11 @@ package dev.felnull.itts.savedata;
 
 import dev.felnull.itts.Main;
 import dev.felnull.itts.core.savedata.*;
-import dev.felnull.itts.savedata.db.*;
+import dev.felnull.itts.savedata.db.SaveDataDAO;
+import dev.felnull.itts.savedata.db.entry.BotStateDataEntry;
+import dev.felnull.itts.savedata.db.entry.GlobalDictDataEntry;
+import dev.felnull.itts.savedata.db.entry.ServerDictDataEntry;
+import dev.felnull.itts.savedata.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -16,6 +20,10 @@ import java.util.stream.Collectors;
 
 public class SERVGHostSaveDataManager implements SaveDataAccess {
     private static final SERVGHostSaveDataManager INSTANCE = new SERVGHostSaveDataManager();
+    private BotInfoSaveService botInfoSaveService;
+    private ServerInfoSaveService serverInfoSaveService;
+    private ServerInfoSaveDataManage<ServerDataImpl> serverData;
+    private ServerInfoSaveDataManage<ServerUserDataImpl> serverUserData;
     private SaveDataDAO dao;
 
     public static SERVGHostSaveDataManager getInstance() {
@@ -24,34 +32,24 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
 
     @Override
     public boolean init() {
-        var dbConfig = Main.DB_CONFIG;
-        dao = new SaveDataDAO(dbConfig.getUrl(), dbConfig.getUser(), dbConfig.getPassword());
+        dao = new SaveDataDAO(Main.DB_CONFIG.getUrl(), Main.DB_CONFIG.getUser(), Main.DB_CONFIG.getPassword());
+        botInfoSaveService = new BotInfoSaveService(dao);
+        serverInfoSaveService = new ServerInfoSaveService(dao);
+
+        serverData = new ServerInfoSaveDataManage<>(serverInfoSaveService, (id) -> new ServerDataImpl(id, dao));
+        //serverUserData = new ServerInfoSaveDataManage<>(serverInfoSaveService, (id) -> new ServerUserDataImpl(id, dao));
+
         return true;
     }
 
     @Override
     public @NotNull ServerData getServerData(long serverId) {
-        return new ServerDataImpl(serverId, dao);
+        return serverData.get(serverId);
     }
 
     @Override
     public @NotNull ServerUserData getServerUserData(long serverId, long userId) {
         return new ServerUserDataImpl(serverId, userId, dao);
-    }
-
-    @Override
-    public @NotNull @Unmodifiable List<DictUseData> getAllDictUseData(long l) {
-        List<DictUseDataEntry> dictUseDataEntries;
-
-        try (Connection con = dao.connect()) {
-            dictUseDataEntries = dao.selectDictUseData(con, l);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return dictUseDataEntries.stream()
-                .map(data -> (DictUseData) new DictUseDataImpl(data.getServerId(), data.getDictId(), dao))
-                .toList();
     }
 
     @Override
@@ -61,17 +59,16 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
 
     @Override
     public @NotNull BotStateData getBotStateData(long l) {
-        return new BotStateDataImpl(l, 0, dao);
+        return new BotStateDataImpl(l, getSelfBotId(), dao);
     }
 
     @Override
     public @NotNull @Unmodifiable Map<Long, BotStateData> getAllBotStateData() {
-        int botId = 0;
 
         List<BotStateDataEntry> stateDataEntries;
 
         try (Connection con = dao.connect()) {
-            stateDataEntries = dao.selectBotStateData(con, botId);
+            stateDataEntries = dao.selectBotStateData(con, getSelfBotId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -79,6 +76,10 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
         return stateDataEntries.stream()
                 .map(it -> new BotStateDataImpl(it.getServerId(), it.getBotId(), dao))
                 .collect(Collectors.toMap(BotStateDataImpl::getServerId, botStateData -> botStateData));
+    }
+
+    private long getSelfBotId() {
+        return Main.RUNTIME.getBot().getJDA().getSelfUser().getIdLong();
     }
 
     @Override
@@ -120,8 +121,7 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
             if (pre != null)
                 removeServerDictData(l, s);
 
-            int maxWordId = dao.selectServerDictDataMaxWordId(con, l);
-            dao.insertServerDictData(con, new ServerDictDataEntry(l, maxWordId + 1, s, s1));
+            dao.insertServerDictData(con, new ServerDictDataEntry(l, s, s1));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -174,7 +174,7 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
             if (pre != null)
                 removeGlobalDictData(s);
 
-            dao.insertGlobalDictData(con, new GlobalDictDataEntry(-1, s, s1));
+            dao.insertGlobalDictData(con, new GlobalDictDataEntry(s, s1));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
