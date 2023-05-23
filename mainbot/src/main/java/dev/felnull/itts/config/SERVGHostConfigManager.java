@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import dev.felnull.itts.Main;
 import dev.felnull.itts.core.config.Config;
-import dev.felnull.itts.core.config.ConfigAccess;
+import dev.felnull.itts.core.config.ConfigContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SERVGHostConfigManager implements ConfigAccess {
+public class SERVGHostConfigManager implements ConfigContext {
     private static final SERVGHostConfigManager INSTANCE = new SERVGHostConfigManager();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File TTS_CONFIG_FILE = new File("./tts_config.json");

@@ -40,21 +40,6 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
     }
 
     @Override
-    public @NotNull @Unmodifiable List<DictUseData> getAllDictUseData(long l) {
-        List<DictUseDataEntry> dictUseDataEntries;
-
-        try (Connection con = dao.connect()) {
-            dictUseDataEntries = dao.selectDictUseData(con, l);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return dictUseDataEntries.stream()
-                .map(data -> (DictUseData) new DictUseDataImpl(data.getServerId(), data.getDictId(), dao))
-                .toList();
-    }
-
-    @Override
     public @NotNull DictUseData getDictUseData(long l, @NotNull String s) {
         return new DictUseDataImpl(l, s, dao);
     }
