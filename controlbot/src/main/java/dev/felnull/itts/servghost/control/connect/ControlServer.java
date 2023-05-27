@@ -1,5 +1,7 @@
 package dev.felnull.itts.servghost.control.connect;
 
+import dev.felnull.itts.servghost.control.Main;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -18,9 +20,9 @@ public class ControlServer {
     private final ConnectionWaitThread waitThread = new ConnectionWaitThread();
 
     /**
-     * 現在接続中のクライアント接続インスタンス
+     * 現在接続中のセッション
      */
-    private final List<ConnectionInstance> connectionInstances = new LinkedList<>();
+    private final List<ServerSession> sessions = new LinkedList<>();
 
     /**
      * サーバーソケット
@@ -33,10 +35,11 @@ public class ControlServer {
      * @throws IOException 接続エラー
      */
     public void start() throws IOException {
-        serverSocket = new ServerSocket();
-        serverSocket.bind(new InetSocketAddress("localhost", 8765));
+        Main.LOGGER.info("Started the control server");
+        this.serverSocket = new ServerSocket();
+        this.serverSocket.bind(new InetSocketAddress("localhost", 8765));
 
-        waitThread.start();
+        this.waitThread.start();
     }
 
     public ServerSocket getServerSocket() {
@@ -44,24 +47,24 @@ public class ControlServer {
     }
 
     /**
-     * スレッドセーフでクライアント接続インスタンスを追加する
+     * スレッドセーフでセッションを追加する
      *
-     * @param connectionInstance クライアント接続インスタンス
+     * @param serverSession セッション
      */
-    protected void addConnectionInstances(ConnectionInstance connectionInstance) {
-        synchronized (connectionInstances) {
-            connectionInstances.add(connectionInstance);
+    protected void addSession(ServerSession serverSession) {
+        synchronized (this.sessions) {
+            this.sessions.add(serverSession);
         }
     }
 
     /**
-     * スレッドセーフでクライアント接続インスタンスを削除する
+     * スレッドセーフでセッションを削除する
      *
-     * @param connectionInstance クライアント接続インスタンス
+     * @param serverSession セッション
      */
-    protected void removeConnectionInstances(ConnectionInstance connectionInstance) {
-        synchronized (connectionInstances) {
-            connectionInstances.remove(connectionInstance);
+    protected void removeSession(ServerSession serverSession) {
+        synchronized (this.sessions) {
+            this.sessions.remove(serverSession);
         }
     }
 }

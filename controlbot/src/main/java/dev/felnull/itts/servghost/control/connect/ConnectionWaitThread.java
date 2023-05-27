@@ -16,6 +16,10 @@ public class ConnectionWaitThread extends Thread {
      */
     private static final long ERROR_WAIT_TIME = 1000;
 
+    public ConnectionWaitThread() {
+        this.setName("connection-wait-thread");
+    }
+
     @Override
     public void run() {
         Main.LOGGER.info("Connection wait start");
@@ -46,7 +50,9 @@ public class ConnectionWaitThread extends Thread {
     private void connectWait() throws IOException {
         Socket socket = Main.CONTROL_SERVER.getServerSocket().accept();
 
-        ConnectionInstance connectionInstance = new ConnectionInstance(socket);
-        connectionInstance.startConnection();
+        Main.LOGGER.info("Initiated connection with client");
+
+        ServerSession serverSession = new ServerSession(socket);
+        serverSession.start();
     }
 }

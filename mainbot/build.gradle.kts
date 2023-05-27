@@ -31,7 +31,9 @@ configurations {
 
 
 dependencies {
-    shadowIn("dev.felnull:itts-core:2.0.0-pre.22")
+    shadowIn("dev.felnull:itts-core:2.0.0-pre.23")
+    shadowIn(project(":share", "default"))
+
     shadowIn("mysql:mysql-connector-java:8.0.32")
 }
 

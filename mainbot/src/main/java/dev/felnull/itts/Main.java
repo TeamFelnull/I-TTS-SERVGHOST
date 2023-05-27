@@ -17,6 +17,8 @@ public class Main {
         var configManager = SERVGHostConfigManager.getInstance();
         DB_CONFIG = configManager.loadDBConfig();
 
+        CONTROL_CLIENT.start();
+
         if (DB_CONFIG.getUrl().isEmpty() || DB_CONFIG.getUser().isEmpty())
             throw new RuntimeException("DB config url or user is empty");
 

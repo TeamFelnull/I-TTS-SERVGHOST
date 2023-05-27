@@ -14,6 +14,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
     implementation("org.apache.logging.log4j:log4j-core:2.18.0")
+
+    implementation(project(":share", "default"))
 }
 
 tasks.getByName<Test>("test") {
