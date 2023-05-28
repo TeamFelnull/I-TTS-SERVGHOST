@@ -1,12 +1,14 @@
 package dev.felnull.itts.servghost.control.connect;
 
+import dev.felnull.itts.servghost.control.ClientInstance;
 import dev.felnull.itts.servghost.control.Main;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 制御BOTとI-TTSを接続するためのサーバー
@@ -20,9 +22,9 @@ public class ControlServer {
     private final ConnectionWaitThread waitThread = new ConnectionWaitThread();
 
     /**
-     * 現在接続中のセッション
+     * 現在接続中のクライアント
      */
-    private final List<ServerSession> sessions = new LinkedList<>();
+    private final Map<UUID, ClientInstance> allClient = new ConcurrentHashMap<>();
 
     /**
      * サーバーソケット
@@ -37,7 +39,7 @@ public class ControlServer {
     public void start() throws IOException {
         Main.LOGGER.info("Started the control server");
         this.serverSocket = new ServerSocket();
-        this.serverSocket.bind(new InetSocketAddress("localhost", 8765));
+        this.serverSocket.bind(new InetSocketAddress(Main.CONNECTION_CONFIG.getHostName(), Main.CONNECTION_CONFIG.getPort()));
 
         this.waitThread.start();
     }
@@ -47,24 +49,20 @@ public class ControlServer {
     }
 
     /**
-     * スレッドセーフでセッションを追加する
+     * クライアントを追加
      *
-     * @param serverSession セッション
+     * @param clientInstance クライアントインスタンス
      */
-    protected void addSession(ServerSession serverSession) {
-        synchronized (this.sessions) {
-            this.sessions.add(serverSession);
-        }
+    public void addClient(ClientInstance clientInstance) {
+        this.allClient.put(clientInstance.getId(), clientInstance);
     }
 
     /**
-     * スレッドセーフでセッションを削除する
+     * クライアントを削除
      *
-     * @param serverSession セッション
+     * @param id クライアントID
      */
-    protected void removeSession(ServerSession serverSession) {
-        synchronized (this.sessions) {
-            this.sessions.remove(serverSession);
-        }
+    public void removeClient(UUID id) {
+        this.allClient.remove(id);
     }
 }

@@ -1,4 +1,4 @@
-package dev.felnull.itts.servghost.share;
+package dev.felnull.itts.servghost.share.connect;
 
 import com.google.common.base.Preconditions;
 import org.apache.logging.log4j.Logger;
@@ -39,11 +39,6 @@ public abstract class BaseSession {
     private final Socket socket;
 
     /**
-     * 受信用ストリーム
-     */
-    private ObjectInputStream receiveSteam;
-
-    /**
      * 送信用ストリーム
      */
     private ObjectOutputStream sendStream;
@@ -63,15 +58,6 @@ public abstract class BaseSession {
      */
     public final void start() {
         onStart();
-
-        try {
-            this.receiveSteam = new ObjectInputStream(socket.getInputStream());
-            this.sendStream = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            stop();
-            throw new RuntimeException(e);
-        }
-
         this.receiveThread.start();
     }
 
@@ -116,6 +102,9 @@ public abstract class BaseSession {
 
         try {
             synchronized (this.sendLock) {
+                if (this.sendStream == null)
+                    this.sendStream = new ObjectOutputStream(socket.getOutputStream());
+
                 this.sendStream.writeObject(object);
             }
         } catch (IOException e) {
@@ -178,10 +167,12 @@ public abstract class BaseSession {
         public void run() {
             getLogger().info("Started waiting to receive");
 
-            try {
-                // 接続を維持している間、受信待ちを行う
+
+            try (ObjectInputStream receiveSteam = new ObjectInputStream(socket.getInputStream())) {
+
                 while (canKeepConnected()) {
                     try {
+                        // 接続を維持している間、受信待ちを行う
                         onReceive(receiveSteam.readObject());
                     } catch (ClassNotFoundException e) {
                         getLogger().error("Object receive error", e);

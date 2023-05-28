@@ -12,6 +12,9 @@ import java.net.Socket;
  * @author MORIMORI0317
  */
 public class ConnectionThread extends Thread {
+    /**
+     * 接続を再試行するまでの時間
+     */
     private static final long RETRY_TIME = 1000 * 10;
 
     public ConnectionThread() {
@@ -50,7 +53,7 @@ public class ConnectionThread extends Thread {
     private void connected() throws IOException {
         Main.LOGGER.info("Try to connect to the server");
 
-        try (Socket socket = new Socket("localhost", 8765)) {
+        try (Socket socket = new Socket(Main.CONNECTION_CONFIG.getHostName(), Main.CONNECTION_CONFIG.getPort())) {
             Main.LOGGER.info("Start connection with server");
 
             ClientSession clientSession = new ClientSession(socket);

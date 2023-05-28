@@ -23,11 +23,22 @@ public class ControlClient {
     private final AtomicReference<ClientSession> currentSession = new AtomicReference<>();
 
     /**
+     * 最初にサーバーからの応答を受け取るまでスレッドをロックするためのオブジェクト
+     */
+    protected final Object threadLock = new Object();
+
+    /**
      * 制御用BOTとの接続を開始する
      */
     public void start() {
         Main.LOGGER.info("Started the control client");
         this.connectionControlThread.start();
+    }
+
+    public void waitConnect() throws InterruptedException {
+        synchronized (threadLock) {
+            threadLock.wait();
+        }
     }
 
     /**
@@ -46,5 +57,13 @@ public class ControlClient {
      */
     public void setCurrentSession(@Nullable ClientSession clientSession) {
         this.currentSession.set(clientSession);
+    }
+
+    /**
+     * 現在接続中のセッションを取得
+     */
+    @Nullable
+    public ClientSession getCurrentSession() {
+        return this.currentSession.get();
     }
 }

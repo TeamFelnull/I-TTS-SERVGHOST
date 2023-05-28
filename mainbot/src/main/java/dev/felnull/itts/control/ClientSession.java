@@ -1,11 +1,13 @@
 package dev.felnull.itts.control;
 
 import dev.felnull.itts.Main;
-import dev.felnull.itts.servghost.share.BaseSession;
+import dev.felnull.itts.servghost.share.connect.BaseSession;
+import dev.felnull.itts.servghost.share.connect.object.S2CStartSendObject;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.Socket;
+import java.util.UUID;
 
 /**
  * クライアント側のセッション
@@ -13,6 +15,11 @@ import java.net.Socket;
  * @author MORIMORI0317
  */
 public class ClientSession extends BaseSession {
+    /**
+     * サーバー側で割り振られたID
+     */
+    private UUID clientId;
+
     /**
      * コンストラクタ
      *
@@ -34,12 +41,22 @@ public class ClientSession extends BaseSession {
 
     @Override
     protected void onReceive(@NotNull Object object) {
-        //TODO 受信処理
-        System.out.println(object);
+
+        if (object instanceof S2CStartSendObject s2CStartSendObject) {
+            ClientReceiveHandler.receiveS2CStart(this, s2CStartSendObject);
+        }
     }
 
     @Override
     protected @NotNull Logger getLogger() {
         return Main.LOGGER;
+    }
+
+    public UUID getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(UUID clientId) {
+        this.clientId = clientId;
     }
 }

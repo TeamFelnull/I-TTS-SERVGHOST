@@ -1,9 +1,11 @@
 package dev.felnull.itts.servghost.control.connect;
 
+import dev.felnull.itts.servghost.control.ClientInstance;
 import dev.felnull.itts.servghost.control.Main;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.UUID;
 
 /**
  * クライアントとの接続を待つスレッド
@@ -53,6 +55,9 @@ public class ConnectionWaitThread extends Thread {
         Main.LOGGER.info("Initiated connection with client");
 
         ServerSession serverSession = new ServerSession(socket);
+        ClientInstance clientInstance = new ClientInstance(UUID.randomUUID(), serverSession);
+
+        serverSession.setClientInstance(clientInstance);
         serverSession.start();
     }
 }

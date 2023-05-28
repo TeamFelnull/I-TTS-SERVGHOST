@@ -17,9 +17,6 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
-group = "dev.felnull"
-version = "2.0.0-pre.22"
-
 repositories {
     mavenCentral()
 }
@@ -31,7 +28,9 @@ configurations {
 
 
 dependencies {
-    shadowIn("dev.felnull:itts-core:2.0.0-pre.23")
+    val coreVersion = project.extra["core_version"]
+
+    shadowIn("dev.felnull:itts-core:$coreVersion")
     shadowIn(project(":share", "default"))
 
     shadowIn("mysql:mysql-connector-java:8.0.32")

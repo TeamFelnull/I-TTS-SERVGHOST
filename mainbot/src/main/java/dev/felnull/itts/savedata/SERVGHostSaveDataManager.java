@@ -46,12 +46,12 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
 
     @Override
     public @NotNull BotStateData getBotStateData(long l) {
-        return new BotStateDataImpl(l, 0, dao);
+        return new BotStateDataImpl(l, getBotId(), dao);
     }
 
     @Override
     public @NotNull @Unmodifiable Map<Long, BotStateData> getAllBotStateData() {
-        int botId = 0;
+        long botId = getBotId();
 
         List<BotStateDataEntry> stateDataEntries;
 
@@ -64,6 +64,10 @@ public class SERVGHostSaveDataManager implements SaveDataAccess {
         return stateDataEntries.stream()
                 .map(it -> new BotStateDataImpl(it.getServerId(), it.getBotId(), dao))
                 .collect(Collectors.toMap(BotStateDataImpl::getServerId, botStateData -> botStateData));
+    }
+
+    private long getBotId() {
+        return Main.RUNTIME.getBot().getJDA().getSelfUser().getIdLong();
     }
 
     @Override

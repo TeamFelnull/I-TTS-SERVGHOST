@@ -2,9 +2,6 @@ plugins {
     id("java")
 }
 
-group = "dev.felnull"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
 }
@@ -16,6 +13,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.18.0")
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("com.google.guava:guava:31.1-jre")
+    implementation("com.google.code.gson:gson:2.10")
 }
 
 tasks.getByName<Test>("test") {
